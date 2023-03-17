@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(srv_and_msg)
+project(odrive_pro_srvs_msgs)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -18,6 +18,9 @@ find_package(rosidl_default_generators REQUIRED)
 # Add msgs/srvs
 set(msg_files
   "msg/OdriveStatus.msg"
+  "msg/SetInputPos.msg"
+  "msg/SetInputVel.msg"
+  "msg/SetInputTorque.msg"
 )
 set(srv_files
   "srv/ClearErrors.srv"
@@ -35,9 +38,6 @@ set(srv_files
   "srv/SetAxisRequestedState.srv"
   "srv/SetAxisStartupConfig.srv"
   "srv/SetControllerModes.srv"
-  "srv/SetInputPos.srv"
-  "srv/SetInputVel.srv"
-  "srv/SetInputTorque.srv"
   "srv/SetPosGain.srv"
   "srv/SetTrajAccelLimits.srv"
   "srv/SetTrajInertia.srv"

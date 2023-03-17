@@ -6,7 +6,7 @@
 #include "socketcan_interface.hpp"
 #include "odrive_can.hpp"
 
-#include "srv_and_msg/msg/odrive_status.hpp"
+#include "odrive_pro_srvs_msgs/msg/odrive_status.hpp"
 
 class CanPublisher : public rclcpp::Node
 {
@@ -20,7 +20,8 @@ private:
     SocketcanInterface socket_axis0_read_;
     SocketcanInterface socket_axis1_read_;
     rclcpp::TimerBase::SharedPtr timer_;
-    rclcpp::Publisher<srv_and_msg::msg::OdriveStatus>::SharedPtr publisher_;
+    rclcpp::Publisher<odrive_pro_srvs_msgs::msg::OdriveStatus>::SharedPtr publisher_;
+    // rclcpp::Subscriber<odrive_pro_srvs_msgs::msg::OdriveStatus>::SharedPtr publisher_;
     rclcpp::Clock ros_clock_;
 
     void timerCallback();

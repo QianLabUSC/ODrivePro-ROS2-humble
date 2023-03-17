@@ -1,5 +1,3 @@
 uint8 axis
 int32 input_vel # 0.01 Factor
 int32 torque_ff # 0.001 Factor
----
-bool success

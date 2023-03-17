@@ -1,4 +1,2 @@
 uint8 axis
 int32 input_torque # 0.01 Factor
----
-bool success

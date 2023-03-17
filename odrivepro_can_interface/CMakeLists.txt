@@ -18,7 +18,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(srv_and_msg REQUIRED)
+find_package(odrive_pro_srvs_msgs REQUIRED)
 
 
 include_directories(
@@ -34,7 +34,7 @@ add_executable(odrive_can_interface
 
 ament_target_dependencies(odrive_can_interface
   rclcpp
-  srv_and_msg
+  odrive_pro_srvs_msgs
 )
 
 
