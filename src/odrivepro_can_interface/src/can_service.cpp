@@ -1,45 +1,46 @@
 #include "odrivepro_can_includes/can_service.hpp"
 
-CanService::CanService(/* args */) : Node("can_service"),
-                                     socket_get_motor_error_(odrive_can::Msg::MSG_GET_MOTOR_ERROR),
-                                     socket_get_encoder_estimates_(odrive_can::Msg::MSG_GET_ENCODER_ESTIMATES),
-                                     socket_get_encoder_count_(odrive_can::Msg::MSG_GET_ENCODER_COUNT),
-                                     socket_get_iq_(odrive_can::Msg::MSG_GET_IQ),
-                                     socket_get_vbus_voltage_(odrive_can::Msg::MSG_GET_VBUS_VOLTAGE),
-                                     socket_generic_write_(0x00)
+CanService::CanService(/* args */) : Node("can_service")
 {
-    service_odrive_estop_ = this->create_service<odrivepro_ros2_can::srv::OdriveEstop>("odrive/odrive_estop", std::bind(&CanService::odrive_estop_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_get_motor_error_ = this->create_service<odrivepro_ros2_can::srv::GetMotorError>("odrive/get_motor_error", std::bind(&CanService::get_motor_error_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_get_encoder_error_ = this->create_service<odrivepro_ros2_can::srv::GetEncoderError>("odrive/get_encoder_error", std::bind(&CanService::get_encoder_error_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_set_axis_node_id_ = this->create_service<odrivepro_ros2_can::srv::SetAxisNodeId>("odrive/set_axis_node_id", std::bind(&CanService::set_axis_node_id_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_set_axis_requested_state_ = this->create_service<odrivepro_ros2_can::srv::SetAxisRequestedState>("odrive/set_axis_requested_state", std::bind(&CanService::set_axis_requested_state_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_set_axis_startup_config_ = this->create_service<odrivepro_ros2_can::srv::SetAxisStartupConfig>("odrive/set_axis_startup_config", std::bind(&CanService::set_axis_startup_config_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_get_encoder_estimates_ = this->create_service<odrivepro_ros2_can::srv::GetEncoderEstimates>("odrive/get_encoder_estimates", std::bind(&CanService::get_encoder_estimates_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_get_encoder_count_ = this->create_service<odrivepro_ros2_can::srv::GetEncoderCount>("odrive/get_encoder_count", std::bind(&CanService::get_encoder_count_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_set_controller_modes_ = this->create_service<odrivepro_ros2_can::srv::SetControllerModes>("odrive/set_controller_modes", std::bind(&CanService::set_controller_modes_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_set_input_pos_ = this->create_service<odrivepro_ros2_can::srv::SetInputPos>("odrive/set_input_pos", std::bind(&CanService::set_input_pos_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_set_input_vel_ = this->create_service<odrivepro_ros2_can::srv::SetInputVel>("odrive/set_input_vel", std::bind(&CanService::set_input_vel_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_set_input_torque_ = this->create_service<odrivepro_ros2_can::srv::SetInputTorque>("odrive/set_input_torque", std::bind(&CanService::set_input_torque_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_set_vel_limit_ = this->create_service<odrivepro_ros2_can::srv::SetVelLimit>("odrive/set_vel_limit", std::bind(&CanService::set_vel_limit_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_start_anticogging_ = this->create_service<odrivepro_ros2_can::srv::StartAnticogging>("odrive/start_anticogging", std::bind(&CanService::start_anticogging_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_set_traj_vel_limit_ = this->create_service<odrivepro_ros2_can::srv::SetTrajVelLimit>("odrive/set_traj_vel_limit", std::bind(&CanService::set_traj_vel_limit_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_set_traj_accel_limits_ = this->create_service<odrivepro_ros2_can::srv::SetTrajAccelLimits>("odrive/set_traj_accel_limits", std::bind(&CanService::set_traj_accel_limits_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_set_traj_inertia_ = this->create_service<odrivepro_ros2_can::srv::SetTrajInertia>("odrive/set_traj_inertia", std::bind(&CanService::set_traj_inertia_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_get_iq_ = this->create_service<odrivepro_ros2_can::srv::GetIq>("odrive/get_iq", std::bind(&CanService::get_iq_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_get_temperature_ = this->create_service<odrivepro_ros2_can::srv::GetTemperature>("odrive/get_temperature", std::bind(&CanService::get_temperature_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_reset_odrive_ = this->create_service<odrivepro_ros2_can::srv::ResetOdrive>("odrive/reset_odrive", std::bind(&CanService::reset_odrive_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_get_vbus_voltage_ = this->create_service<odrivepro_ros2_can::srv::GetVbusVoltage>("odrive/get_vbus_voltage", std::bind(&CanService::get_vbus_voltage_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_clear_errors_ = this->create_service<odrivepro_ros2_can::srv::ClearErrors>("odrive/clear_errors", std::bind(&CanService::clear_errors_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_set_absolute_pos_ = this->create_service<odrivepro_ros2_can::srv::SetAbsolutePos>("odrive/set_absolute_pos", std::bind(&CanService::set_absolute_pos_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_set_pos_gain_ = this->create_service<odrivepro_ros2_can::srv::SetPosGain>("odrive/set_pos_gain", std::bind(&CanService::set_pos_gain_callback, this, std::placeholders::_1, std::placeholders::_2));
-    service_set_vel_gains_ = this->create_service<odrivepro_ros2_can::srv::SetVelGains>("odrive/set_vel_gains", std::bind(&CanService::set_vel_gains_callback, this, std::placeholders::_1, std::placeholders::_2));
+    socket_get_motor_error_ = SocketcanInterface(odrive_can::Msg::MSG_GET_MOTOR_ERROR);
+    socket_get_encoder_estimates_ = SocketcanInterface(odrive_can::Msg::MSG_GET_ENCODER_ESTIMATES);
+    socket_get_encoder_count_ = SocketcanInterface(odrive_can::Msg::MSG_GET_ENCODER_COUNT);
+    socket_get_iq_ = SocketcanInterface(odrive_can::Msg::MSG_GET_IQ);
+    socket_get_vbus_voltage_ = SocketcanInterface(odrive_can::Msg::MSG_GET_VBUS_VOLTAGE);
+    socket_generic_write_ = SocketcanInterface(odrive_can::Msg::MSG_CO_NMT_CTRL);
+
+    service_odrive_estop_ = this->create_service<srv_and_msg::srv::OdriveEstop>("odrive/odrive_estop", std::bind(&CanService::odrive_estop_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_get_motor_error_ = this->create_service<srv_and_msg::srv::GetMotorError>("odrive/get_motor_error", std::bind(&CanService::get_motor_error_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_get_encoder_error_ = this->create_service<srv_and_msg::srv::GetEncoderError>("odrive/get_encoder_error", std::bind(&CanService::get_encoder_error_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_set_axis_node_id_ = this->create_service<srv_and_msg::srv::SetAxisNodeId>("odrive/set_axis_node_id", std::bind(&CanService::set_axis_node_id_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_set_axis_requested_state_ = this->create_service<srv_and_msg::srv::SetAxisRequestedState>("odrive/set_axis_requested_state", std::bind(&CanService::set_axis_requested_state_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_set_axis_startup_config_ = this->create_service<srv_and_msg::srv::SetAxisStartupConfig>("odrive/set_axis_startup_config", std::bind(&CanService::set_axis_startup_config_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_get_encoder_estimates_ = this->create_service<srv_and_msg::srv::GetEncoderEstimates>("odrive/get_encoder_estimates", std::bind(&CanService::get_encoder_estimates_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_get_encoder_count_ = this->create_service<srv_and_msg::srv::GetEncoderCount>("odrive/get_encoder_count", std::bind(&CanService::get_encoder_count_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_set_controller_modes_ = this->create_service<srv_and_msg::srv::SetControllerModes>("odrive/set_controller_modes", std::bind(&CanService::set_controller_modes_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_set_input_pos_ = this->create_service<srv_and_msg::srv::SetInputPos>("odrive/set_input_pos", std::bind(&CanService::set_input_pos_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_set_input_vel_ = this->create_service<srv_and_msg::srv::SetInputVel>("odrive/set_input_vel", std::bind(&CanService::set_input_vel_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_set_input_torque_ = this->create_service<srv_and_msg::srv::SetInputTorque>("odrive/set_input_torque", std::bind(&CanService::set_input_torque_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_set_vel_limit_ = this->create_service<srv_and_msg::srv::SetVelLimit>("odrive/set_vel_limit", std::bind(&CanService::set_vel_limit_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_start_anticogging_ = this->create_service<srv_and_msg::srv::StartAnticogging>("odrive/start_anticogging", std::bind(&CanService::start_anticogging_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_set_traj_vel_limit_ = this->create_service<srv_and_msg::srv::SetTrajVelLimit>("odrive/set_traj_vel_limit", std::bind(&CanService::set_traj_vel_limit_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_set_traj_accel_limits_ = this->create_service<srv_and_msg::srv::SetTrajAccelLimits>("odrive/set_traj_accel_limits", std::bind(&CanService::set_traj_accel_limits_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_set_traj_inertia_ = this->create_service<srv_and_msg::srv::SetTrajInertia>("odrive/set_traj_inertia", std::bind(&CanService::set_traj_inertia_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_get_iq_ = this->create_service<srv_and_msg::srv::GetIq>("odrive/get_iq", std::bind(&CanService::get_iq_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_get_temperature_ = this->create_service<srv_and_msg::srv::GetTemperature>("odrive/get_temperature", std::bind(&CanService::get_temperature_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_reset_odrive_ = this->create_service<srv_and_msg::srv::ResetOdrive>("odrive/reset_odrive", std::bind(&CanService::reset_odrive_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_get_vbus_voltage_ = this->create_service<srv_and_msg::srv::GetVbusVoltage>("odrive/get_vbus_voltage", std::bind(&CanService::get_vbus_voltage_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_clear_errors_ = this->create_service<srv_and_msg::srv::ClearErrors>("odrive/clear_errors", std::bind(&CanService::clear_errors_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_set_absolute_pos_ = this->create_service<srv_and_msg::srv::SetAbsolutePos>("odrive/set_absolute_pos", std::bind(&CanService::set_absolute_pos_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_set_pos_gain_ = this->create_service<srv_and_msg::srv::SetPosGain>("odrive/set_pos_gain", std::bind(&CanService::set_pos_gain_callback, this, std::placeholders::_1, std::placeholders::_2));
+    service_set_vel_gains_ = this->create_service<srv_and_msg::srv::SetVelGains>("odrive/set_vel_gains", std::bind(&CanService::set_vel_gains_callback, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 CanService::~CanService()
 {
 }
 
-void CanService::odrive_estop_callback(const std::shared_ptr<odrivepro_ros2_can::srv::OdriveEstop::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::OdriveEstop::Response> response)
+void CanService::odrive_estop_callback(const std::shared_ptr<srv_and_msg::srv::OdriveEstop::Request> request, std::shared_ptr<srv_and_msg::srv::OdriveEstop::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 0;
@@ -60,7 +61,7 @@ void CanService::odrive_estop_callback(const std::shared_ptr<odrivepro_ros2_can:
     socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }
-void CanService::get_motor_error_callback(const std::shared_ptr<odrivepro_ros2_can::srv::GetMotorError::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::GetMotorError::Response> response)
+void CanService::get_motor_error_callback(const std::shared_ptr<srv_and_msg::srv::GetMotorError::Request> request, std::shared_ptr<srv_and_msg::srv::GetMotorError::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 0;
@@ -86,7 +87,7 @@ void CanService::get_motor_error_callback(const std::shared_ptr<odrivepro_ros2_c
     RCLCPP_DEBUG(this->get_logger(), "%x %x %x %x %x %x %x %x", recv_frame.data[0], recv_frame.data[1], recv_frame.data[2], recv_frame.data[3], recv_frame.data[4], recv_frame.data[5], recv_frame.data[6], recv_frame.data[7]);
     response->motor_error = odrive_can::can_getSignal<int32_t>(recv_frame, 0, 32, true);
 }
-void CanService::get_encoder_error_callback(const std::shared_ptr<odrivepro_ros2_can::srv::GetEncoderError::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::GetEncoderError::Response> response)
+void CanService::get_encoder_error_callback(const std::shared_ptr<srv_and_msg::srv::GetEncoderError::Request> request, std::shared_ptr<srv_and_msg::srv::GetEncoderError::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 0;
@@ -112,7 +113,7 @@ void CanService::get_encoder_error_callback(const std::shared_ptr<odrivepro_ros2
     RCLCPP_DEBUG(this->get_logger(), "%x %x %x %x %x %x %x %x", recv_frame.data[0], recv_frame.data[1], recv_frame.data[2], recv_frame.data[3], recv_frame.data[4], recv_frame.data[5], recv_frame.data[6], recv_frame.data[7]);
     response->encoder_error = odrive_can::can_getSignal<int32_t>(recv_frame, 0, 32, true);
 }
-void CanService::set_axis_node_id_callback(const std::shared_ptr<odrivepro_ros2_can::srv::SetAxisNodeId::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::SetAxisNodeId::Response> response)
+void CanService::set_axis_node_id_callback(const std::shared_ptr<srv_and_msg::srv::SetAxisNodeId::Request> request, std::shared_ptr<srv_and_msg::srv::SetAxisNodeId::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 2;
@@ -135,7 +136,7 @@ void CanService::set_axis_node_id_callback(const std::shared_ptr<odrivepro_ros2_
     socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }
-void CanService::set_axis_requested_state_callback(const std::shared_ptr<odrivepro_ros2_can::srv::SetAxisRequestedState::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::SetAxisRequestedState::Response> response)
+void CanService::set_axis_requested_state_callback(const std::shared_ptr<srv_and_msg::srv::SetAxisRequestedState::Request> request, std::shared_ptr<srv_and_msg::srv::SetAxisRequestedState::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 8;
@@ -160,7 +161,7 @@ void CanService::set_axis_requested_state_callback(const std::shared_ptr<odrivep
     socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }
-void CanService::set_axis_startup_config_callback(const std::shared_ptr<odrivepro_ros2_can::srv::SetAxisStartupConfig::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::SetAxisStartupConfig::Response> response)
+void CanService::set_axis_startup_config_callback(const std::shared_ptr<srv_and_msg::srv::SetAxisStartupConfig::Request> request, std::shared_ptr<srv_and_msg::srv::SetAxisStartupConfig::Response> response)
 {
     // Not yet implemented in ODrive Firmware
     response->success = false;
@@ -177,7 +178,7 @@ void CanService::set_axis_startup_config_callback(const std::shared_ptr<odrivepr
         return;
     }
 }
-void CanService::get_encoder_estimates_callback(const std::shared_ptr<odrivepro_ros2_can::srv::GetEncoderEstimates::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::GetEncoderEstimates::Response> response)
+void CanService::get_encoder_estimates_callback(const std::shared_ptr<srv_and_msg::srv::GetEncoderEstimates::Request> request, std::shared_ptr<srv_and_msg::srv::GetEncoderEstimates::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 0;
@@ -204,7 +205,7 @@ void CanService::get_encoder_estimates_callback(const std::shared_ptr<odrivepro_
     response->pos_estimate = odrive_can::can_getSignal<float>(recv_frame, 0, 32, true);
     response->vel_estimate = odrive_can::can_getSignal<float>(recv_frame, 32, 32, true);
 }
-void CanService::get_encoder_count_callback(const std::shared_ptr<odrivepro_ros2_can::srv::GetEncoderCount::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::GetEncoderCount::Response> response)
+void CanService::get_encoder_count_callback(const std::shared_ptr<srv_and_msg::srv::GetEncoderCount::Request> request, std::shared_ptr<srv_and_msg::srv::GetEncoderCount::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 0;
@@ -231,7 +232,7 @@ void CanService::get_encoder_count_callback(const std::shared_ptr<odrivepro_ros2
     response->shadow_count = odrive_can::can_getSignal<int32_t>(recv_frame, 0, 32, true);
     response->cpr_count = odrive_can::can_getSignal<int32_t>(recv_frame, 32, 32, true);
 }
-void CanService::set_controller_modes_callback(const std::shared_ptr<odrivepro_ros2_can::srv::SetControllerModes::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::SetControllerModes::Response> response)
+void CanService::set_controller_modes_callback(const std::shared_ptr<srv_and_msg::srv::SetControllerModes::Request> request, std::shared_ptr<srv_and_msg::srv::SetControllerModes::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 8;
@@ -260,7 +261,7 @@ void CanService::set_controller_modes_callback(const std::shared_ptr<odrivepro_r
     socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }
-void CanService::set_input_pos_callback(const std::shared_ptr<odrivepro_ros2_can::srv::SetInputPos::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::SetInputPos::Response> response)
+void CanService::set_input_pos_callback(const std::shared_ptr<srv_and_msg::srv::SetInputPos::Request> request, std::shared_ptr<srv_and_msg::srv::SetInputPos::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 8;
@@ -289,7 +290,7 @@ void CanService::set_input_pos_callback(const std::shared_ptr<odrivepro_ros2_can
     socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }
-void CanService::set_input_vel_callback(const std::shared_ptr<odrivepro_ros2_can::srv::SetInputVel::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::SetInputVel::Response> response)
+void CanService::set_input_vel_callback(const std::shared_ptr<srv_and_msg::srv::SetInputVel::Request> request, std::shared_ptr<srv_and_msg::srv::SetInputVel::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 8;
@@ -318,7 +319,7 @@ void CanService::set_input_vel_callback(const std::shared_ptr<odrivepro_ros2_can
     socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }
-void CanService::set_input_torque_callback(const std::shared_ptr<odrivepro_ros2_can::srv::SetInputTorque::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::SetInputTorque::Response> response)
+void CanService::set_input_torque_callback(const std::shared_ptr<srv_and_msg::srv::SetInputTorque::Request> request, std::shared_ptr<srv_and_msg::srv::SetInputTorque::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 4;
@@ -326,7 +327,7 @@ void CanService::set_input_torque_callback(const std::shared_ptr<odrivepro_ros2_
     send_frame.data[1] = request->input_torque >> 8;
     send_frame.data[2] = request->input_torque >> 16;
     send_frame.data[3] = request->input_torque >> 24;
-    send_frame.can_id = odrive_can::Msg::MSG_SET_input_torque;
+    send_frame.can_id = odrive_can::Msg::MSG_SET_INPUT_TORQUE;
     if (request->axis == odrive_can::AXIS::AXIS_0)
     {
         send_frame.can_id += odrive_can::AXIS::AXIS_0_ID;
@@ -343,7 +344,7 @@ void CanService::set_input_torque_callback(const std::shared_ptr<odrivepro_ros2_
     socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }
-void CanService::set_vel_limit_callback(const std::shared_ptr<odrivepro_ros2_can::srv::SetVelLimit::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::SetVelLimit::Response> response)
+void CanService::set_vel_limit_callback(const std::shared_ptr<srv_and_msg::srv::SetVelLimit::Request> request, std::shared_ptr<srv_and_msg::srv::SetVelLimit::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 4;
@@ -371,7 +372,7 @@ void CanService::set_vel_limit_callback(const std::shared_ptr<odrivepro_ros2_can
     socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }
-void CanService::start_anticogging_callback(const std::shared_ptr<odrivepro_ros2_can::srv::StartAnticogging::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::StartAnticogging::Response> response)
+void CanService::start_anticogging_callback(const std::shared_ptr<srv_and_msg::srv::StartAnticogging::Request> request, std::shared_ptr<srv_and_msg::srv::StartAnticogging::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 0;
@@ -393,7 +394,7 @@ void CanService::start_anticogging_callback(const std::shared_ptr<odrivepro_ros2
     socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }
-void CanService::set_traj_vel_limit_callback(const std::shared_ptr<odrivepro_ros2_can::srv::SetTrajVelLimit::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::SetTrajVelLimit::Response> response)
+void CanService::set_traj_vel_limit_callback(const std::shared_ptr<srv_and_msg::srv::SetTrajVelLimit::Request> request, std::shared_ptr<srv_and_msg::srv::SetTrajVelLimit::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 4;
@@ -421,7 +422,7 @@ void CanService::set_traj_vel_limit_callback(const std::shared_ptr<odrivepro_ros
     socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }
-void CanService::set_traj_accel_limits_callback(const std::shared_ptr<odrivepro_ros2_can::srv::SetTrajAccelLimits::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::SetTrajAccelLimits::Response> response)
+void CanService::set_traj_accel_limits_callback(const std::shared_ptr<srv_and_msg::srv::SetTrajAccelLimits::Request> request, std::shared_ptr<srv_and_msg::srv::SetTrajAccelLimits::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 8;
@@ -454,7 +455,7 @@ void CanService::set_traj_accel_limits_callback(const std::shared_ptr<odrivepro_
     socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }
-void CanService::set_traj_inertia_callback(const std::shared_ptr<odrivepro_ros2_can::srv::SetTrajInertia::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::SetTrajInertia::Response> response)
+void CanService::set_traj_inertia_callback(const std::shared_ptr<srv_and_msg::srv::SetTrajInertia::Request> request, std::shared_ptr<srv_and_msg::srv::SetTrajInertia::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 4;
@@ -482,7 +483,7 @@ void CanService::set_traj_inertia_callback(const std::shared_ptr<odrivepro_ros2_
     socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }
-void CanService::get_iq_callback(const std::shared_ptr<odrivepro_ros2_can::srv::GetIq::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::GetIq::Response> response)
+void CanService::get_iq_callback(const std::shared_ptr<srv_and_msg::srv::GetIq::Request> request, std::shared_ptr<srv_and_msg::srv::GetIq::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 0;
@@ -509,7 +510,7 @@ void CanService::get_iq_callback(const std::shared_ptr<odrivepro_ros2_can::srv::
     response->iq_setpoint = odrive_can::can_getSignal<float>(recv_frame, 0, 32, true);
     response->iq_measured = odrive_can::can_getSignal<float>(recv_frame, 32, 32, true);
 }
-void CanService::get_temperature_callback(const std::shared_ptr<odrivepro_ros2_can::srv::GetTemperature::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::GetTemperature::Response> response)
+void CanService::get_temperature_callback(const std::shared_ptr<srv_and_msg::srv::GetTemperature::Request> request, std::shared_ptr<srv_and_msg::srv::GetTemperature::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 0;
@@ -537,14 +538,14 @@ void CanService::get_temperature_callback(const std::shared_ptr<odrivepro_ros2_c
     response->temp_motor = odrive_can::can_getSignal<float>(recv_frame, 32, 32, true);
 }
 
-void CanService::reset_odrive_callback(const std::shared_ptr<odrivepro_ros2_can::srv::ResetOdrive::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::ResetOdrive::Response> response)
+void CanService::reset_odrive_callback(const std::shared_ptr<srv_and_msg::srv::ResetOdrive::Request> request, std::shared_ptr<srv_and_msg::srv::ResetOdrive::Response> response)
 {
     if (request->axis == odrive_can::AXIS::AXIS_0 || odrive_can::AXIS::AXIS_1)
     {
         can_frame send_frame;
         send_frame.can_dlc = 0;
         send_frame.can_id = odrive_can::AXIS::AXIS_0_ID;
-        send_frame.can_id += odrive_can::Msg::MSG_RESET_ODRIVE;
+        send_frame.can_id += odrive_can::Msg::MSG_REBOOT_ODRIVE;
         socket_generic_write_.writeFrame(send_frame);
         response->success = true;
     }
@@ -554,7 +555,7 @@ void CanService::reset_odrive_callback(const std::shared_ptr<odrivepro_ros2_can:
         return;
     }
 }
-void CanService::get_vbus_voltage_callback(const std::shared_ptr<odrivepro_ros2_can::srv::GetVbusVoltage::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::GetVbusVoltage::Response> response)
+void CanService::get_vbus_voltage_callback(const std::shared_ptr<srv_and_msg::srv::GetVbusVoltage::Request> request, std::shared_ptr<srv_and_msg::srv::GetVbusVoltage::Response> response)
 {
     if (request->axis == odrive_can::AXIS::AXIS_0 || odrive_can::AXIS::AXIS_1)
     {
@@ -576,7 +577,7 @@ void CanService::get_vbus_voltage_callback(const std::shared_ptr<odrivepro_ros2_
         return;
     }
 }
-void CanService::clear_errors_callback(const std::shared_ptr<odrivepro_ros2_can::srv::ClearErrors::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::ClearErrors::Response> response)
+void CanService::clear_errors_callback(const std::shared_ptr<srv_and_msg::srv::ClearErrors::Request> request, std::shared_ptr<srv_and_msg::srv::ClearErrors::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 0;
@@ -596,7 +597,7 @@ void CanService::clear_errors_callback(const std::shared_ptr<odrivepro_ros2_can:
     socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }
-void CanService::set_absolute_pos_callback(const std::shared_ptr<odrivepro_ros2_can::srv::SetAbsolutePos::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::SetAbsolutePos::Response> response)
+void CanService::set_absolute_pos_callback(const std::shared_ptr<srv_and_msg::srv::SetAbsolutePos::Request> request, std::shared_ptr<srv_and_msg::srv::SetAbsolutePos::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 4;
@@ -624,7 +625,7 @@ void CanService::set_absolute_pos_callback(const std::shared_ptr<odrivepro_ros2_
     socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }
-void CanService::set_pos_gain_callback(const std::shared_ptr<odrivepro_ros2_can::srv::SetPosGain::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::SetPosGain::Response> response)
+void CanService::set_pos_gain_callback(const std::shared_ptr<srv_and_msg::srv::SetPosGain::Request> request, std::shared_ptr<srv_and_msg::srv::SetPosGain::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 4;
@@ -635,7 +636,7 @@ void CanService::set_pos_gain_callback(const std::shared_ptr<odrivepro_ros2_can:
     send_frame.data[1] = float_bytes >> 8;
     send_frame.data[2] = float_bytes >> 16;
     send_frame.data[3] = float_bytes >> 24;
-    send_frame.can_id = odrive_can::Msg::MSG_SET_POS_GAIN;
+    send_frame.can_id = odrive_can::Msg::MSG_SET_POSITION_GAIN;
     if (request->axis == odrive_can::AXIS::AXIS_0)
     {
         send_frame.can_id += odrive_can::AXIS::AXIS_0_ID;
@@ -652,7 +653,7 @@ void CanService::set_pos_gain_callback(const std::shared_ptr<odrivepro_ros2_can:
     socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }
-void CanService::set_vel_gains_callback(const std::shared_ptr<odrivepro_ros2_can::srv::SetVelGains::Request> request, std::shared_ptr<odrivepro_ros2_can::srv::SetVelGains::Response> response)
+void CanService::set_vel_gains_callback(const std::shared_ptr<srv_and_msg::srv::SetVelGains::Request> request, std::shared_ptr<srv_and_msg::srv::SetVelGains::Response> response)
 {
     can_frame send_frame;
     send_frame.can_dlc = 8;

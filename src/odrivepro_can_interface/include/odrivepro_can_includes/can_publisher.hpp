@@ -20,7 +20,7 @@ private:
     SocketcanInterface socket_axis0_read_;
     SocketcanInterface socket_axis1_read_;
     rclcpp::TimerBase::SharedPtr timer_;
-    rclcpp::Publisher<odrivepro_ros2_can::msg::OdriveStatus>::SharedPtr publisher_;
+    rclcpp::Publisher<srv_and_msg::msg::OdriveStatus>::SharedPtr publisher_;
     rclcpp::Clock ros_clock_;
 
     void timerCallback();

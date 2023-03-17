@@ -37,6 +37,7 @@ set(srv_files
   "srv/SetControllerModes.srv"
   "srv/SetInputPos.srv"
   "srv/SetInputVel.srv"
+  "srv/SetInputTorque.srv"
   "srv/SetPosGain.srv"
   "srv/SetTrajAccelLimits.srv"
   "srv/SetTrajInertia.srv"
@@ -52,13 +53,14 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 )
 
 # Allows the use of msgs/srvs defined in this package
-rosidl_get_typesupport_target(cpp_typesupport_target
-  ${PROJECT_NAME} "rosidl_typesupport_cpp"
-)
+# we don't need this because we put the srv and msg in a different package
+#rosidl_get_typesupport_target(cpp_typesupport_target
+#  ${PROJECT_NAME} "rosidl_typesupport_cpp"
+#)
 
-rosidl_get_typesupport_target(${PROJECT_NAME}_interface
-  ${PROJECT_NAME} "rosidl_typesupport_cpp"
-)
+# rosidl_get_typesupport_target(${PROJECT_NAME}_interface
+#   ${PROJECT_NAME} "rosidl_typesupport_cpp"
+# )
 
 
 if(BUILD_TESTING)

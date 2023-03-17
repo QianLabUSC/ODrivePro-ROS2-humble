@@ -5,7 +5,7 @@ CanPublisher::CanPublisher() : Node("can_publisher"),
                                socket_axis1_read_(odrive_can::Msg::MSG_ODRIVE_HEARTBEAT | odrive_can::AXIS::AXIS_1_ID, 0x7FF, 110000)
 {
     // auto qos = rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, qos_profile.depth), qos_profile);
-    publisher_ = this->create_publisher<odrivepro_ros2_can::msg::OdriveStatus>("/odrive/odrive_status", 5);
+    publisher_ = this->create_publisher<srv_and_msg::msg::OdriveStatus>("/odrive/odrive_status", 5);
     timer_ = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&CanPublisher::timerCallback, this));
 }
 
@@ -15,7 +15,7 @@ CanPublisher::~CanPublisher()
 
 void CanPublisher::timerCallback()
 {
-    odrivepro_ros2_can::msg::OdriveStatus odrive_status_msg;
+    srv_and_msg::msg::OdriveStatus odrive_status_msg;
     odrive_status_msg.axis = 0;
 
     can_frame axis0_frame;
