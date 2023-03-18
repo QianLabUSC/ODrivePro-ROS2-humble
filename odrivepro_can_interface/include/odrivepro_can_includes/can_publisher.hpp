@@ -22,6 +22,7 @@ private:
     SocketcanInterface socket_get_iq_;
     SocketcanInterface socket_get_encoder_estimates_;
     odrive_pro_srvs_msgs::msg::OdriveStatus odrive_status_msg;
+
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<odrive_pro_srvs_msgs::msg::OdriveStatus>::SharedPtr publisher_;
     rclcpp::Clock ros_clock_;
