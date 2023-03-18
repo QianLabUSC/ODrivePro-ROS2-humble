@@ -20,9 +20,11 @@ private:
     SocketcanInterface socket_axis0_read_;
     SocketcanInterface socket_axis1_read_;
     SocketcanInterface socket_get_encoder_estimates_;
+    odrive_pro_srvs_msgs::msg::OdriveStatus odrive_status_msg;
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<odrive_pro_srvs_msgs::msg::OdriveStatus>::SharedPtr publisher_;
     rclcpp::Clock ros_clock_;
 
     void timerCallback();
+    void updateStatusCallback();
 };
