@@ -1,14 +1,15 @@
 #include "odrivepro_can_includes/can_service.hpp"
 
-CanService::CanService(/* args */) : Node("can_service")
+CanService::CanService(/* args */) : Node("can_service"),
+                                     socket_get_motor_error_(odrive_can::Msg::MSG_GET_MOTOR_ERROR),
+                                     socket_get_encoder_error_(odrive_can::Msg::MSG_GET_ENCODER_ERROR),
+                                     socket_get_encoder_estimates_(odrive_can::Msg::MSG_GET_ENCODER_ESTIMATES),
+                                     socket_get_encoder_count_(odrive_can::Msg::MSG_GET_ENCODER_COUNT),
+                                     socket_get_iq_(odrive_can::Msg::MSG_GET_IQ),
+                                     socket_get_temperature_(odrive_can::Msg::MSG_GET_TEMPERATURE),
+                                     socket_get_vbus_voltage_(odrive_can::Msg::MSG_GET_VBUS_VOLTAGE),
+                                     socket_generic_write_(0x00)
 {
-    socket_get_motor_error_ = SocketcanInterface(odrive_can::Msg::MSG_GET_MOTOR_ERROR);
-    socket_get_encoder_estimates_ = SocketcanInterface(odrive_can::Msg::MSG_GET_ENCODER_ESTIMATES);
-    socket_get_encoder_count_ = SocketcanInterface(odrive_can::Msg::MSG_GET_ENCODER_COUNT);
-    socket_get_iq_ = SocketcanInterface(odrive_can::Msg::MSG_GET_IQ | odrive_can::AXIS::AXIS_0_ID);
-    socket_get_vbus_voltage_ = SocketcanInterface(odrive_can::Msg::MSG_GET_VBUS_VOLTAGE);
-    socket_generic_write_ = SocketcanInterface(odrive_can::Msg::MSG_CO_NMT_CTRL);
-
     service_odrive_estop_ = this->create_service<odrive_pro_srvs_msgs::srv::OdriveEstop>("odrive/odrive_estop", std::bind(&CanService::odrive_estop_callback, this, std::placeholders::_1, std::placeholders::_2));
     service_get_motor_error_ = this->create_service<odrive_pro_srvs_msgs::srv::GetMotorError>("odrive/get_motor_error", std::bind(&CanService::get_motor_error_callback, this, std::placeholders::_1, std::placeholders::_2));
     service_get_encoder_error_ = this->create_service<odrive_pro_srvs_msgs::srv::GetEncoderError>("odrive/get_encoder_error", std::bind(&CanService::get_encoder_error_callback, this, std::placeholders::_1, std::placeholders::_2));

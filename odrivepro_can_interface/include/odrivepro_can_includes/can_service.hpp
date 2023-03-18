@@ -71,14 +71,24 @@ private:
 
 
 
-    SocketcanInterface socket_get_motor_error_ = SocketcanInterface(odrive_can::Msg::MSG_GET_MOTOR_ERROR);
-    SocketcanInterface socket_get_encoder_error_ = SocketcanInterface(odrive_can::Msg::MSG_GET_ENCODER_ERROR);
-    SocketcanInterface socket_get_encoder_estimates_ = SocketcanInterface(odrive_can::Msg::MSG_GET_ENCODER_ESTIMATES);
-    SocketcanInterface socket_get_encoder_count_ = SocketcanInterface(odrive_can::Msg::MSG_GET_ENCODER_COUNT);
-    SocketcanInterface socket_get_iq_ = SocketcanInterface(odrive_can::Msg::MSG_GET_IQ);
-    SocketcanInterface socket_get_temperature_ = SocketcanInterface(odrive_can::Msg::MSG_GET_TEMPERATURE);
-    SocketcanInterface socket_get_vbus_voltage_ = SocketcanInterface(odrive_can::Msg::MSG_GET_VBUS_VOLTAGE);
-    SocketcanInterface socket_generic_write_ = SocketcanInterface(odrive_can::Msg::MSG_CO_NMT_CTRL);
+    // SocketcanInterface socket_get_motor_error_ = SocketcanInterface(odrive_can::Msg::MSG_GET_MOTOR_ERROR | odrive_can::AXIS::AXIS_0_ID);
+    // SocketcanInterface socket_get_encoder_error_ = SocketcanInterface(odrive_can::Msg::MSG_GET_ENCODER_ERROR | odrive_can::AXIS::AXIS_0_ID);
+    // SocketcanInterface socket_get_encoder_estimates_ = SocketcanInterface(odrive_can::Msg::MSG_GET_ENCODER_ESTIMATES | odrive_can::AXIS::AXIS_0_ID);
+    // SocketcanInterface socket_get_encoder_count_ = SocketcanInterface(odrive_can::Msg::MSG_GET_ENCODER_COUNT | odrive_can::AXIS::AXIS_0_ID);
+    // SocketcanInterface socket_get_iq_ = SocketcanInterface(odrive_can::Msg::MSG_GET_IQ | odrive_can::AXIS::AXIS_0_ID);
+    // SocketcanInterface socket_get_temperature_ = SocketcanInterface(odrive_can::Msg::MSG_GET_TEMPERATURE | odrive_can::AXIS::AXIS_0_ID);
+    // SocketcanInterface socket_get_vbus_voltage_ = SocketcanInterface(odrive_can::Msg::MSG_GET_VBUS_VOLTAGE | odrive_can::AXIS::AXIS_0_ID);
+    // SocketcanInterface socket_generic_write_ = SocketcanInterface(odrive_can::Msg::MSG_CO_NMT_CTRL | odrive_can::AXIS::AXIS_0_ID);
+
+    SocketcanInterface socket_get_motor_error_;
+    SocketcanInterface socket_get_encoder_error_;
+    SocketcanInterface socket_get_encoder_estimates_;
+    SocketcanInterface socket_get_encoder_count_;
+    SocketcanInterface socket_get_iq_;
+    SocketcanInterface socket_get_temperature_;
+    SocketcanInterface socket_get_vbus_voltage_;
+    SocketcanInterface socket_generic_write_;
+
 
     void odrive_estop_callback(const std::shared_ptr<odrive_pro_srvs_msgs::srv::OdriveEstop::Request> request, std::shared_ptr<odrive_pro_srvs_msgs::srv::OdriveEstop::Response> response);
     void get_motor_error_callback(const std::shared_ptr<odrive_pro_srvs_msgs::srv::GetMotorError::Request> request, std::shared_ptr<odrive_pro_srvs_msgs::srv::GetMotorError::Response> response);
