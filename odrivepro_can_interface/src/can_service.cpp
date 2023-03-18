@@ -277,8 +277,8 @@ void CanService::set_input_pos_callback(const std::shared_ptr<odrive_pro_srvs_ms
     send_frame.data[7] = request->torque_ff >> 8;
     send_frame.can_id = odrive_can::Msg::MSG_SET_INPUT_POS | odrive_can::AXIS::AXIS_0_ID;
     
-    // socket_set_position_.writeFrame(send_frame);
-    socket_generic_write_.writeFrame(send_frame);
+    socket_set_position_.writeFrame(send_frame);
+    // socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }
 void CanService::set_input_vel_callback(const std::shared_ptr<odrive_pro_srvs_msgs::srv::SetInputVel::Request> request, std::shared_ptr<odrive_pro_srvs_msgs::srv::SetInputVel::Response> response)
