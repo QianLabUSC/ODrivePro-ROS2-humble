@@ -8,6 +8,7 @@ CanService::CanService(/* args */) : Node("can_service"),
                                      socket_get_iq_(odrive_can::Msg::MSG_GET_IQ),
                                      socket_get_temperature_(odrive_can::Msg::MSG_GET_TEMPERATURE),
                                      socket_get_vbus_voltage_(odrive_can::Msg::MSG_GET_VBUS_VOLTAGE),
+                                     socket_set_position_(odrive_can::Msg::MSG_SET_POSITION | odrive_can::AXIS::AXIS_0_ID, 0x7FF, 500),
                                      socket_generic_write_(0x00)
 {
     service_odrive_estop_ = this->create_service<odrive_pro_srvs_msgs::srv::OdriveEstop>("odrive/odrive_estop", std::bind(&CanService::odrive_estop_callback, this, std::placeholders::_1, std::placeholders::_2));
@@ -275,20 +276,10 @@ void CanService::set_input_pos_callback(const std::shared_ptr<odrive_pro_srvs_ms
     send_frame.data[6] = request->torque_ff;
     send_frame.data[7] = request->torque_ff >> 8;
     send_frame.can_id = odrive_can::Msg::MSG_SET_INPUT_POS;
-    if (request->axis == odrive_can::AXIS::AXIS_0)
-    {
-        send_frame.can_id += odrive_can::AXIS::AXIS_0_ID;
-    }
-    else if (request->axis == odrive_can::AXIS::AXIS_1)
-    {
-        send_frame.can_id += odrive_can::AXIS::AXIS_1_ID;
-    }
-    else
-    {
-        response->success = false;
-        return;
-    }
-    socket_generic_write_.writeFrame(send_frame);
+
+    send_frame.can_id += odrive_can::AXIS::AXIS_0_ID;
+    
+    socket_set_position_.writeFrame(send_frame);
     response->success = true;
 }
 void CanService::set_input_vel_callback(const std::shared_ptr<odrive_pro_srvs_msgs::srv::SetInputVel::Request> request, std::shared_ptr<odrive_pro_srvs_msgs::srv::SetInputVel::Response> response)

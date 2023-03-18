@@ -88,6 +88,7 @@ private:
     SocketcanInterface socket_get_temperature_;
     SocketcanInterface socket_get_vbus_voltage_;
     SocketcanInterface socket_generic_write_;
+    SocketcanInterface socket_set_position_;
 
 
     void odrive_estop_callback(const std::shared_ptr<odrive_pro_srvs_msgs::srv::OdriveEstop::Request> request, std::shared_ptr<odrive_pro_srvs_msgs::srv::OdriveEstop::Response> response);
