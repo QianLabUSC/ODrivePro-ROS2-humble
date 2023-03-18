@@ -36,46 +36,6 @@ void CanPublisher::timerCallback()
     }
     
 
-    // can_frame send_frame;
-    // send_frame.can_dlc = 0;
-    // send_frame.can_id = 1 << 30; // Set ID to have RTR bit set.
-    // send_frame.can_id += odrive_can::Msg::MSG_GET_ENCODER_ESTIMATES;
-    // if (request->axis == odrive_can::AXIS::AXIS_0)
-    // {
-    //     send_frame.can_id += odrive_can::AXIS::AXIS_0_ID;
-    // }
-    // else if (request->axis == odrive_can::AXIS::AXIS_1)
-    // {
-    //     send_frame.can_id += odrive_can::AXIS::AXIS_1_ID;
-    // }
-    // else
-    // {
-    //     return;
-    // }
-    // socket_get_encoder_estimates_.writeFrame(send_frame);
-    can_frame recv_frame;
-    if (socket_get_encoder_estimates_.readFrame(&recv_frame) < 0) {
-        RCLCPP_INFO(this->get_logger(), "No ODrive Response Received");
-    }
-    // RCLCPP_INFO(this->get_logger(), "%x %x %x %x %x %x %x %x", recv_frame.data[0], recv_frame.data[1], recv_frame.data[2], recv_frame.data[3], recv_frame.data[4], recv_frame.data[5], recv_frame.data[6], recv_frame.data[7]);
-    RCLCPP_INFO(this->get_logger(), "%f %f", odrive_can::can_getSignal<float>(recv_frame, 0, 32, true), odrive_can::can_getSignal<float>(recv_frame, 32, 32, true));
-    odrive_status_msg.pos_estimate = odrive_can::can_getSignal<float>(recv_frame, 0, 32, true);
-    odrive_status_msg.vel_estimate = odrive_can::can_getSignal<float>(recv_frame, 32, 32, true);
-    publisher_->publish(odrive_status_msg);
-    
-}
-
-
-void CanPublisher::updateStatusCallback()
-{
-
-    can_frame recv_frame;
-    if (socket_get_encoder_estimates_.readFrame(&recv_frame) < 0) {
-        RCLCPP_INFO(this->get_logger(), "No ODrive Encoder Estimate Received");
-    }
-    // RCLCPP_INFO(this->get_logger(), "%x %x %x %x %x %x %x %x", recv_frame.data[0], recv_frame.data[1], recv_frame.data[2], recv_frame.data[3], recv_frame.data[4], recv_frame.data[5], recv_frame.data[6], recv_frame.data[7]);
-    RCLCPP_INFO(this->get_logger(), "%f %f", odrive_can::can_getSignal<float>(recv_frame, 0, 32, true), odrive_can::can_getSignal<float>(recv_frame, 32, 32, true));
-    
     //odrive_status_msg.axis = 1;
     //can_frame axis1_frame;
     //int axis1_read = socket_axis1_read_.readFrame(&axis1_frame);
@@ -92,4 +52,22 @@ void CanPublisher::updateStatusCallback()
         //odrive_status_msg.axis_state = odrive_can::can_getSignal<uint32_t>(axis1_frame, 32, 32, true);
     //}
     //publisher_->publish(odrive_status_msg);
+
+    
+}
+
+
+void CanPublisher::updateStatusCallback()
+{
+
+    
+    can_frame recv_frame;
+    if (socket_get_encoder_estimates_.readFrame(&recv_frame) < 0) {
+        RCLCPP_INFO(this->get_logger(), "No ODrive Response Received");
+    }
+    RCLCPP_INFO(this->get_logger(), "%f %f", odrive_can::can_getSignal<float>(recv_frame, 0, 32, true), odrive_can::can_getSignal<float>(recv_frame, 32, 32, true));
+    odrive_status_msg.pos_estimate = odrive_can::can_getSignal<float>(recv_frame, 0, 32, true);
+    odrive_status_msg.vel_estimate = odrive_can::can_getSignal<float>(recv_frame, 32, 32, true);
+    publisher_->publish(odrive_status_msg);
+
 }
