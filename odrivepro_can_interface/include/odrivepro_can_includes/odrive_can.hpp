@@ -20,7 +20,7 @@ enum AXIS
 {
     AXIS_0 = 0,
     AXIS_1 = 1,
-    AXIS_0_ID = 3 << NUM_CMD_ID_BITS,
+    AXIS_0_ID = 0 << NUM_CMD_ID_BITS,
     AXIS_1_ID = 1 << NUM_CMD_ID_BITS,
 };
 

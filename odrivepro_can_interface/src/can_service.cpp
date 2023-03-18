@@ -5,7 +5,7 @@ CanService::CanService(/* args */) : Node("can_service")
     socket_get_motor_error_ = SocketcanInterface(odrive_can::Msg::MSG_GET_MOTOR_ERROR);
     socket_get_encoder_estimates_ = SocketcanInterface(odrive_can::Msg::MSG_GET_ENCODER_ESTIMATES);
     socket_get_encoder_count_ = SocketcanInterface(odrive_can::Msg::MSG_GET_ENCODER_COUNT);
-    socket_get_iq_ = SocketcanInterface(odrive_can::Msg::MSG_GET_IQ);
+    socket_get_iq_ = SocketcanInterface(odrive_can::Msg::MSG_GET_IQ | odrive_can::AXIS::AXIS_0_ID);
     socket_get_vbus_voltage_ = SocketcanInterface(odrive_can::Msg::MSG_GET_VBUS_VOLTAGE);
     socket_generic_write_ = SocketcanInterface(odrive_can::Msg::MSG_CO_NMT_CTRL);
 
@@ -487,26 +487,26 @@ void CanService::get_iq_callback(const std::shared_ptr<odrive_pro_srvs_msgs::srv
 {
     can_frame send_frame;
     send_frame.can_dlc = 0;
-    send_frame.can_id = 1 << 30; // Set ID to have RTR bit set.
-    send_frame.can_id += odrive_can::Msg::MSG_GET_IQ;
+    //send_frame.can_id = 1 << 30; // Set ID to have RTR
+    //std::cout << send_frame.can_id << std::endl;
+    send_frame.can_id = odrive_can::Msg::MSG_GET_IQ;
+    std::cout << send_frame.can_id << std::endl;
     if (request->axis == odrive_can::AXIS::AXIS_0)
     {
-        send_frame.can_id += odrive_can::AXIS::AXIS_0_ID;
-    }
-    else if (request->axis == odrive_can::AXIS::AXIS_1)
-    {
-        send_frame.can_id += odrive_can::AXIS::AXIS_1_ID;
+       send_frame.can_id += odrive_can::AXIS::AXIS_0_ID;
+       std::cout << send_frame.can_id << std::endl;
     }
     else
     {
         return;
     }
+    std::cout<<send_frame.can_id<<std::endl;
     socket_get_iq_.writeFrame(send_frame);
     can_frame recv_frame;
     if (socket_get_iq_.readFrame(&recv_frame) < 0) {
         RCLCPP_INFO(this->get_logger(), "No ODrive Response Received");
     }
-    RCLCPP_DEBUG(this->get_logger(), "%x %x %x %x %x %x %x %x", recv_frame.data[0], recv_frame.data[1], recv_frame.data[2], recv_frame.data[3], recv_frame.data[4], recv_frame.data[5], recv_frame.data[6], recv_frame.data[7]);
+    RCLCPP_INFO(this->get_logger(), "%x %x %x %x %x %x %x %x", recv_frame.data[0], recv_frame.data[1], recv_frame.data[2], recv_frame.data[3], recv_frame.data[4], recv_frame.data[5], recv_frame.data[6], recv_frame.data[7]);
     response->iq_setpoint = odrive_can::can_getSignal<float>(recv_frame, 0, 32, true);
     response->iq_measured = odrive_can::can_getSignal<float>(recv_frame, 32, 32, true);
 }

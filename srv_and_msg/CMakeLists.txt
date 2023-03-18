@@ -18,11 +18,12 @@ find_package(rosidl_default_generators REQUIRED)
 # Add msgs/srvs
 set(msg_files
   "msg/OdriveStatus.msg"
-  "msg/SetInputPos.msg"
-  "msg/SetInputVel.msg"
-  "msg/SetInputTorque.msg"
+
 )
 set(srv_files
+  "srv/SetInputPos.srv"
+  "srv/SetInputVel.srv"
+  "srv/SetInputTorque.srv"
   "srv/ClearErrors.srv"
   "srv/GetEncoderCount.srv"
   "srv/GetEncoderError.srv"

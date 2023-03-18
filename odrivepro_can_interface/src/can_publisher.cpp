@@ -34,20 +34,20 @@ void CanPublisher::timerCallback()
     }
     publisher_->publish(odrive_status_msg);
 
-    odrive_status_msg.axis = 1;
-    can_frame axis1_frame;
-    int axis1_read = socket_axis1_read_.readFrame(&axis1_frame);
-    if (axis1_read < 0)
-    {
-        RCLCPP_INFO(this->get_logger(), "No Axis 1 Heartbeat message");
-        odrive_status_msg.is_axis_alive = false;
-    }
-    else
-    {
-        odrive_status_msg.is_axis_alive = true;
-        RCLCPP_DEBUG(this->get_logger(), "%x %x %x %x %x %x %x %x", axis1_frame.data[0], axis1_frame.data[1], axis1_frame.data[2], axis1_frame.data[3], axis1_frame.data[4], axis1_frame.data[5], axis1_frame.data[6], axis1_frame.data[7]);
-        odrive_status_msg.axis_error = odrive_can::can_getSignal<uint32_t>(axis1_frame, 0, 32, true);
-        odrive_status_msg.axis_state = odrive_can::can_getSignal<uint32_t>(axis1_frame, 32, 32, true);
-    }
-    publisher_->publish(odrive_status_msg);
+    //odrive_status_msg.axis = 1;
+    //can_frame axis1_frame;
+    //int axis1_read = socket_axis1_read_.readFrame(&axis1_frame);
+    //if (axis1_read < 0)
+    //{
+     //   RCLCPP_INFO(this->get_logger(), "No Axis 1 Heartbeat message");
+     //   odrive_status_msg.is_axis_alive = false;
+    //}
+    //else
+    //{
+      //  odrive_status_msg.is_axis_alive = true;
+        //RCLCPP_DEBUG(this->get_logger(), "%x %x %x %x %x %x %x %x", axis1_frame.data[0], axis1_frame.data[1], axis1_frame.data[2], axis1_frame.data[3], axis1_frame.data[4], axis1_frame.data[5], axis1_frame.data[6], axis1_frame.data[7]);
+        //odrive_status_msg.axis_error = odrive_can::can_getSignal<uint32_t>(axis1_frame, 0, 32, true);
+        //odrive_status_msg.axis_state = odrive_can::can_getSignal<uint32_t>(axis1_frame, 32, 32, true);
+    //}
+    //publisher_->publish(odrive_status_msg);
 }
