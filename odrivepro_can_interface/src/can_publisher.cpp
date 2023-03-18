@@ -62,9 +62,9 @@ void CanPublisher::updateStatusCallback()
 
     
     can_frame recv_frame;
-    if (socket_get_encoder_estimates_.readFrame(&recv_frame) < 0) {
-        RCLCPP_INFO(this->get_logger(), "No ODrive Response Received");
-    }
+    // if (socket_get_encoder_estimates_.readFrame(&recv_frame) < 0) {
+    //     RCLCPP_INFO(this->get_logger(), "No ODrive Response Received");
+    // }
     RCLCPP_INFO(this->get_logger(), "%f %f", odrive_can::can_getSignal<float>(recv_frame, 0, 32, true), odrive_can::can_getSignal<float>(recv_frame, 32, 32, true));
     odrive_status_msg.pos_estimate = odrive_can::can_getSignal<float>(recv_frame, 0, 32, true);
     odrive_status_msg.vel_estimate = odrive_can::can_getSignal<float>(recv_frame, 32, 32, true);
