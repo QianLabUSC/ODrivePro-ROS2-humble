@@ -3,6 +3,7 @@
 CanPublisher::CanPublisher() : Node("can_publisher"),
                                socket_axis0_read_(odrive_can::Msg::MSG_ODRIVE_HEARTBEAT | odrive_can::AXIS::AXIS_0_ID, 0x7FF, 500),
                                socket_axis1_read_(odrive_can::Msg::MSG_ODRIVE_HEARTBEAT | odrive_can::AXIS::AXIS_1_ID, 0x7FF, 110000),
+                               socket_get_iq_(odrive_can::Msg::MSG_GET_IQ | odrive_can::AXIS::AXIS_0_ID, 0x7FF, 500),
                                socket_get_encoder_estimates_(odrive_can::Msg::MSG_GET_ENCODER_ESTIMATES | odrive_can::AXIS::AXIS_0_ID, 0x7FF, 500)
 {
     // auto qos = rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, qos_profile.depth), qos_profile);
@@ -63,11 +64,18 @@ void CanPublisher::updateStatusCallback()
     
     can_frame recv_frame;
     if (socket_get_encoder_estimates_.readFrame(&recv_frame) < 0) {
-        RCLCPP_INFO(this->get_logger(), "No ODrive Response Received");
+        RCLCPP_INFO(this->get_logger(), "No Encoder Response Received");
     }
     RCLCPP_INFO(this->get_logger(), "%f %f", odrive_can::can_getSignal<float>(recv_frame, 0, 32, true), odrive_can::can_getSignal<float>(recv_frame, 32, 32, true));
     odrive_status_msg.pos_estimate = odrive_can::can_getSignal<float>(recv_frame, 0, 32, true);
     odrive_status_msg.vel_estimate = odrive_can::can_getSignal<float>(recv_frame, 32, 32, true);
+    can_frame iq_recv_frame;
+    if (socket_get_iq_.readFrame(&iq_recv_frame) < 0) {
+        RCLCPP_INFO(this->get_logger(), "No Current Response Received");
+    }
+    RCLCPP_INFO(this->get_logger(), "%f %f", odrive_can::can_getSignal<float>(recv_frame, 0, 32, true), odrive_can::can_getSignal<float>(recv_frame, 32, 32, true));
+    odrive_status_msg.iq_setpoint = odrive_can::can_getSignal<float>(recv_frame, 0, 32, true);
+    odrive_status_msg.iq_measured = odrive_can::can_getSignal<float>(recv_frame, 32, 32, true);
     publisher_->publish(odrive_status_msg);
 
 }

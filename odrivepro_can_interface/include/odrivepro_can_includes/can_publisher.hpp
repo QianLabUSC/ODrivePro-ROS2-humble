@@ -19,6 +19,7 @@ private:
 
     SocketcanInterface socket_axis0_read_;
     SocketcanInterface socket_axis1_read_;
+    SocketcanInterface socket_get_iq_;
     SocketcanInterface socket_get_encoder_estimates_;
     odrive_pro_srvs_msgs::msg::OdriveStatus odrive_status_msg;
     rclcpp::TimerBase::SharedPtr timer_;
