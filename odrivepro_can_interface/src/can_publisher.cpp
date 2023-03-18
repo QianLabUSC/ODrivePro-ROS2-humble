@@ -7,7 +7,7 @@ CanPublisher::CanPublisher() : Node("can_publisher"),
 {
     // auto qos = rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, qos_profile.depth), qos_profile);
     publisher_ = this->create_publisher<odrive_pro_srvs_msgs::msg::OdriveStatus>("/odrive/odrive_status", 5);
-    timer_ = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&CanPublisher::timerCallback, this));
+    timer_ = this->create_wall_timer(std::chrono::milliseconds(1), std::bind(&CanPublisher::timerCallback, this));
 }
 
 CanPublisher::~CanPublisher()
