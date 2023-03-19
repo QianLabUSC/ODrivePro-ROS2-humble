@@ -267,9 +267,9 @@ void CanService::set_input_pos_callback(const std::shared_ptr<odrive_pro_srvs_ms
 {
     can_frame send_frame;
     send_frame.can_dlc = 8;
-    std::memcpy(send_frame.data[0], &request->input_position, sizeof(request->input_position));
-    std::memcpy(send_frame.data[4], &request->vel_ff, sizeof(request->vel_ff));
-    std::memcpy(send_frame.data[6], &request->torque_ff, sizeof(request->torque_ff));
+    std::memcpy(&send_frame.data[0], &request->input_position, sizeof(request->input_position));
+    std::memcpy(&send_frame.data[4], &request->vel_ff, sizeof(request->vel_ff));
+    std::memcpy(&send_frame.data[6], &request->torque_ff, sizeof(request->torque_ff));
     send_frame.can_id = odrive_can::Msg::MSG_SET_INPUT_POS | odrive_can::AXIS::AXIS_0_ID;
     
     socket_set_position_.writeFrame(send_frame);
