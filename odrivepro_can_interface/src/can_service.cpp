@@ -267,10 +267,10 @@ void CanService::set_input_pos_callback(const std::shared_ptr<odrive_pro_srvs_ms
 {
     can_frame send_frame;
     send_frame.can_dlc = 8;
-    send_frame.data[0] = request->input_position;
-    send_frame.data[1] = request->input_position >> 8;
-    send_frame.data[2] = request->input_position >> 16;
-    send_frame.data[3] = request->input_position >> 24;
+    send_frame.data[0] = request->input_position >> 24;
+    send_frame.data[1] = request->input_position >> 16;
+    send_frame.data[2] = request->input_position >> 8;
+    send_frame.data[3] = request->input_position;
     send_frame.data[4] = request->vel_ff;
     send_frame.data[5] = request->vel_ff >> 8;
     send_frame.data[6] = request->torque_ff;
