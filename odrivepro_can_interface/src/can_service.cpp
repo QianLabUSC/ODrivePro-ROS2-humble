@@ -8,7 +8,8 @@ CanService::CanService(/* args */) : Node("can_service"),
                                      socket_get_iq_(odrive_can::Msg::MSG_GET_IQ),
                                      socket_get_temperature_(odrive_can::Msg::MSG_GET_TEMPERATURE),
                                      socket_get_vbus_voltage_(odrive_can::Msg::MSG_GET_VBUS_VOLTAGE),
-                                     socket_set_position_(odrive_can::Msg::MSG_SET_INPUT_POS | odrive_can::AXIS::AXIS_0_ID, 0x7FF, 500),
+                                     socket_set_position_channel0(odrive_can::Msg::MSG_SET_INPUT_POS | odrive_can::AXIS::AXIS_0_ID,0, 0x7FF, 500),
+                                     socket_set_position_channel1(odrive_can::Msg::MSG_SET_INPUT_POS | odrive_can::AXIS::AXIS_0_ID,1, 0x7FF, 500),
                                      socket_generic_write_(0x00)
 {
     service_odrive_estop_ = this->create_service<odrive_pro_srvs_msgs::srv::OdriveEstop>("odrive/odrive_estop", std::bind(&CanService::odrive_estop_callback, this, std::placeholders::_1, std::placeholders::_2));
@@ -265,14 +266,25 @@ void CanService::set_controller_modes_callback(const std::shared_ptr<odrive_pro_
 }
 void CanService::set_input_pos_callback(const std::shared_ptr<odrive_pro_srvs_msgs::srv::SetInputPos::Request> request, std::shared_ptr<odrive_pro_srvs_msgs::srv::SetInputPos::Response> response)
 {
+   
+
     can_frame send_frame;
     send_frame.can_dlc = 8;
     std::memcpy(&send_frame.data[0], &request->input_position, sizeof(request->input_position));
     std::memcpy(&send_frame.data[4], &request->vel_ff, sizeof(request->vel_ff));
     std::memcpy(&send_frame.data[6], &request->torque_ff, sizeof(request->torque_ff));
+
     send_frame.can_id = odrive_can::Msg::MSG_SET_INPUT_POS | odrive_can::AXIS::AXIS_0_ID;
-    
-    socket_set_position_.writeFrame(send_frame);
+    ;
+    if (request->can_channel == 0)
+    {
+        socket_set_position_channel0.writeFrame(send_frame);
+    }
+    else
+    {
+        socket_set_position_channel1.writeFrame(send_frame);
+        return;
+    }
     // socket_generic_write_.writeFrame(send_frame);
     response->success = true;
 }

@@ -87,7 +87,8 @@ private:
     SocketcanInterface socket_get_iq_;
     SocketcanInterface socket_get_temperature_;
     SocketcanInterface socket_get_vbus_voltage_;
-    SocketcanInterface socket_set_position_;
+    SocketcanInterface socket_set_position_channel0;
+    SocketcanInterface socket_set_position_channel1;
     SocketcanInterface socket_generic_write_;
     
 

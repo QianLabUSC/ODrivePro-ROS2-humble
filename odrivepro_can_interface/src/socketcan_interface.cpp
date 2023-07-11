@@ -4,19 +4,23 @@
 SocketcanInterface::SocketcanInterface(canid_t msg_id)
 {
     // Constructor for no mask definition
-    this->openSocket(msg_id, DEFAULT_CANID_MASK, DEFAULT_READ_TIMOUT);
+    this->openSocket(msg_id,DEFAULT_CAN_CHANNEL,DEFAULT_CANID_MASK, DEFAULT_READ_TIMOUT);
 }
-
-SocketcanInterface::SocketcanInterface(canid_t msg_id, uint16_t mask)
+SocketcanInterface::SocketcanInterface(canid_t msg_id,uint8_t can_channel)
+{
+    // Constructor for no mask definition
+    this->openSocket(msg_id,can_channel,DEFAULT_CANID_MASK, DEFAULT_READ_TIMOUT);
+}
+SocketcanInterface::SocketcanInterface(canid_t msg_id, uint8_t can_channel, uint16_t mask)
 {
     // Constructor with mask definition
-    this->openSocket(msg_id, mask, DEFAULT_READ_TIMOUT);
+    this->openSocket(msg_id, can_channel, mask, DEFAULT_READ_TIMOUT);
 }
 
-SocketcanInterface::SocketcanInterface(canid_t msg_id, uint16_t mask, uint32_t timeout_microseconds)
+SocketcanInterface::SocketcanInterface(canid_t msg_id, uint8_t can_channel, uint16_t mask, uint32_t timeout_microseconds)
 {
     // Constructor with mask definition
-    this->openSocket(msg_id, mask, timeout_microseconds);
+    this->openSocket(msg_id, can_channel, mask, timeout_microseconds);
 }
 
 SocketcanInterface::~SocketcanInterface()
@@ -25,15 +29,24 @@ SocketcanInterface::~SocketcanInterface()
     close(this->s);
 }
 
-int SocketcanInterface::openSocket(canid_t msg_id, uint16_t mask, uint32_t timeout_microseconds)
+int SocketcanInterface::openSocket(canid_t msg_id, uint8_t can_channel, uint16_t mask, uint32_t timeout_microseconds)
 {
     // Open socket
     s = socket(PF_CAN, SOCK_RAW, CAN_RAW);
     if (s < 0)
+    {
         return -1;
-    strcpy(ifr.ifr_name, "can0");
-    ioctl(s, SIOCGIFINDEX, &ifr);
-
+    }
+        if (can_channel == 0)
+        {
+            strcpy(ifr.ifr_name, "can0");
+            ioctl(s, SIOCGIFINDEX, &ifr);
+        }
+        else 
+        {
+            strcpy(ifr.ifr_name, "can1");
+            ioctl(s, SIOCGIFINDEX, &ifr);
+        }
     can_filter filt;
     filt.can_id = msg_id;
     filt.can_mask = mask & CAN_SFF_MASK; // Mask to first 5 bits of 11 bit identifier

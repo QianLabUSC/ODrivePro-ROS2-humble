@@ -15,13 +15,16 @@
 
 #define DEFAULT_READ_TIMOUT 500 // Microseconds
 #define DEFAULT_CANID_MASK 0b11111 // Mask first 5 bits
+#define DEFAULT_CAN_CHANNEL 0
 
 class SocketcanInterface
 {
 public:
   SocketcanInterface(canid_t msg_id);
-  SocketcanInterface(canid_t msg_id, uint16_t mask);
-  SocketcanInterface(canid_t msg_id, uint16_t mask, uint32_t timeout_microseconds);
+  SocketcanInterface(canid_t msg_id, uint8_t can_channel);
+  SocketcanInterface(canid_t msg_id, uint8_t can_channel, uint16_t mask);
+  SocketcanInterface(canid_t msg_id, uint8_t can_channel, uint16_t mask, uint32_t timeout_microseconds);
+  
   ~SocketcanInterface();
   int readFrame(can_frame *frame);
   int writeFrame(can_frame frame);
@@ -30,7 +33,7 @@ private:
   int s;
   struct ifreq ifr;
   struct sockaddr_can addr;
-  int openSocket(canid_t msg_id, uint16_t mask, uint32_t timeout_microseconds);
+  int openSocket(canid_t msg_id, uint8_t can_channel, uint16_t mask, uint32_t timeout_microseconds);
 
 };
 

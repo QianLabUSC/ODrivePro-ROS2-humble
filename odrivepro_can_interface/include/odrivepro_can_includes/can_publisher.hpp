@@ -17,10 +17,14 @@ public:
 private:
     rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
 
-    SocketcanInterface socket_axis0_read_;
-    SocketcanInterface socket_axis1_read_;
-    SocketcanInterface socket_get_iq_;
-    SocketcanInterface socket_get_encoder_estimates_;
+    SocketcanInterface socket_channel0_axis0_read_;
+    SocketcanInterface socket_channel0_axis1_read_;
+    SocketcanInterface socket_channel1_axis0_read_;
+    SocketcanInterface socket_channel1_axis1_read_;
+    SocketcanInterface socket_channel0_get_iq_;
+    SocketcanInterface socket_channel1_get_iq_;
+    SocketcanInterface socket_get_encoder_estimates_0;
+    SocketcanInterface socket_get_encoder_estimates_1;
     odrive_pro_srvs_msgs::msg::OdriveStatus odrive_status_msg;
 
     rclcpp::TimerBase::SharedPtr timer_;
